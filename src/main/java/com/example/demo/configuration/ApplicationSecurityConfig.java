@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -19,6 +21,7 @@ import static com.example.demo.configuration.ApplicationUserRole.*;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
 
@@ -27,10 +30,6 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ApplicationSecurityConfig(boolean disableDefaults, PasswordEncoder passwordEncoder) {
-        super(disableDefaults);
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -39,10 +38,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
                 .antMatchers("/api/**").hasRole(STUDENT.name())
-                .antMatchers(HttpMethod.DELETE, "management/api/**").hasAuthority(STUDENT_WRITE.getPermission())
-                .antMatchers(HttpMethod.POST, "management/api/**").hasAuthority(STUDENT_WRITE.getPermission())
-                .antMatchers(HttpMethod.PUT, "management/api/**").hasAuthority(STUDENT_WRITE.getPermission())
-                .antMatchers(HttpMethod.GET, "management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
+                //todo 这种验证方式存在问题 无法正确拦截
+//                .antMatchers(HttpMethod.DELETE, "management/api/**").hasAuthority(STUDENT_WRITE.getPermission())
+//                .antMatchers(HttpMethod.POST, "management/api/**").hasAuthority(STUDENT_WRITE.getPermission())
+//                .antMatchers(HttpMethod.PUT, "management/api/**").hasAuthority(STUDENT_WRITE.getPermission())
+//                .antMatchers(HttpMethod.GET, "management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
                 .anyRequest()
                 .authenticated()
                 .and()
