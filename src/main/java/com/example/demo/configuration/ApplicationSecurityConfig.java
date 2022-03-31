@@ -32,7 +32,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+                .csrf().disable()
+                .authorizeRequests()
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
                 .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest()
@@ -47,20 +49,23 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails annaSmithUser = User.builder()
                 .username("annaSmith")
                 .password(passwordEncoder.encode("password"))
-                .roles(STUDENT.name())
+//                .roles(STUDENT.name())
+                .authorities(STUDENT.getGrantedAuthorities())
                 .build();
 
         UserDetails lindaUser = User.builder()
                 .username("linda")
                 .password(passwordEncoder.encode("password123"))
-                .roles(ADMIN.name())
+//                .roles(ADMIN.name())
+                .authorities(ADMIN.getGrantedAuthorities())
                 .build();
         UserDetails tomUser = User.builder()
                 .username("tom")
                 .password(passwordEncoder.encode("password123"))
-                .roles(ADMINTRAINEE.name())
+//                .roles(ADMINTRAINEE.name())
+                .authorities(ADMINTRAINEE.getGrantedAuthorities())
                 .build();
 
-        return new InMemoryUserDetailsManager(annaSmithUser, lindaUser);
+        return new InMemoryUserDetailsManager(annaSmithUser, lindaUser,tomUser);
     }
 }
